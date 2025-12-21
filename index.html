@@ -36,4 +36,16 @@
       <df-messenger-chat-bubble chat-title="Finca Concierge"></df-messenger-chat-bubble>
     </df-messenger>
   </body>
+
+  <script>
+      window.addEventListener("load", () => {
+        const dfMessenger = document.querySelector("df-messenger");
+        if (!dfMessenger?.setQueryParameters) return;
+
+        dfMessenger.setQueryParameters({
+          timeZone: "America/Bogota"
+          // opcional: parameters: { canal: "alpha_web" }
+        });
+      });
+    </script>
 </html>
