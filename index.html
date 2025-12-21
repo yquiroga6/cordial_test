@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Finca Concierge (Alpha)</title>
+
+    <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">
+    <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
+
+    <style>
+      body { font-family: system-ui, Arial, sans-serif; padding: 24px; }
+      df-messenger {
+        z-index: 999;
+        position: fixed;
+        --df-messenger-font-color: #000;
+        --df-messenger-font-family: Google Sans;
+        --df-messenger-chat-background: #f3f6fc;
+        --df-messenger-message-user-background: #d3e3fd;
+        --df-messenger-message-bot-background: #fff;
+        bottom: 16px;
+        right: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Finca Concierge (Alpha)</h1>
+    <p>Haz clic en el chat abajo a la derecha para iniciar la prueba.</p>
+
+    <df-messenger
+      location="us-central1"
+      project-id="cordial-480800"
+      agent-id="cf41407c-6270-4b6e-98ca-ef8d776f8af7"
+      language-code="es"
+      max-query-length="-1">
+      <df-messenger-chat-bubble chat-title="Finca Concierge"></df-messenger-chat-bubble>
+    </df-messenger>
+  </body>
+</html>
