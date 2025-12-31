@@ -1,15 +1,319 @@
+```html
 <!doctype html>
 <html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Finca Concierge (Alpha)</title>
+    <title>Finca El Mirador — Reservas & Experiencias</title>
+    <meta
+      name="description"
+      content="Landing page de Finca El Mirador: habitaciones, espacios reservables, políticas y contacto. Incluye asistente de reservas (chat)."
+    />
 
-    <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">
+    <!-- Chatbot (DF Messenger) -->
+    <link
+      rel="stylesheet"
+      href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css"
+    />
     <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
 
     <style>
-      body { font-family: system-ui, Arial, sans-serif; padding: 24px; }
+      :root{
+        --bg: #0b0f12;
+        --card: rgba(255,255,255,0.06);
+        --card2: rgba(255,255,255,0.08);
+        --text: rgba(255,255,255,0.92);
+        --muted: rgba(255,255,255,0.72);
+        --line: rgba(255,255,255,0.12);
+        --accent: #d7b56d;  /* dorado sobrio */
+        --accent2:#7fbf7f;  /* verde discreto */
+        --shadow: 0 12px 40px rgba(0,0,0,0.35);
+        --radius: 18px;
+        --max: 1120px;
+      }
+
+      *{ box-sizing: border-box; }
+      html, body{ height: 100%; }
+      body{
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        color: var(--text);
+        background: radial-gradient(1200px 600px at 70% -10%, rgba(215,181,109,0.16), transparent 55%),
+                    radial-gradient(1000px 600px at 20% 10%, rgba(127,191,127,0.12), transparent 55%),
+                    var(--bg);
+      }
+
+      a{ color: inherit; text-decoration: none; }
+      .container{ max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+
+      /* Top bar */
+      .topbar{
+        position: sticky; top: 0; z-index: 50;
+        backdrop-filter: blur(10px);
+        background: rgba(11,15,18,0.72);
+        border-bottom: 1px solid var(--line);
+      }
+      .topbar-inner{
+        display:flex; align-items:center; justify-content:space-between;
+        padding: 14px 0;
+        gap: 14px;
+      }
+      .brand{
+        display:flex; align-items:center; gap:12px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+      }
+      .logo{
+        width: 40px; height: 40px; border-radius: 12px;
+        background: linear-gradient(135deg, rgba(215,181,109,0.9), rgba(127,191,127,0.8));
+        box-shadow: var(--shadow);
+      }
+      .nav{
+        display:flex; gap: 14px; flex-wrap: wrap;
+        color: var(--muted);
+        font-weight: 550;
+        font-size: 14px;
+      }
+      .nav a{
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+      }
+      .nav a:hover{
+        color: var(--text);
+        border-color: var(--line);
+        background: rgba(255,255,255,0.04);
+      }
+      .cta{
+        display:flex; gap:10px; align-items:center;
+      }
+      .btn{
+        display:inline-flex; align-items:center; justify-content:center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.04);
+        color: var(--text);
+        font-weight: 650;
+        font-size: 14px;
+        cursor:pointer;
+      }
+      .btn:hover{ background: rgba(255,255,255,0.07); }
+      .btn-primary{
+        border-color: rgba(215,181,109,0.35);
+        background: rgba(215,181,109,0.14);
+      }
+      .btn-primary:hover{ background: rgba(215,181,109,0.20); }
+
+      /* Hero */
+      .hero{
+        padding: 52px 0 26px;
+      }
+      .hero-grid{
+        display:grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 22px;
+        align-items: stretch;
+      }
+      .hero-card{
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+        overflow:hidden;
+        box-shadow: var(--shadow);
+      }
+      .hero-copy{
+        padding: 26px;
+      }
+      .kicker{
+        display:inline-flex;
+        gap:10px; align-items:center;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid var(--line);
+        color: var(--muted);
+        font-weight: 650;
+        font-size: 13px;
+      }
+      .dot{
+        width: 8px; height: 8px; border-radius: 999px;
+        background: var(--accent2);
+        box-shadow: 0 0 0 4px rgba(127,191,127,0.15);
+      }
+      h1{
+        margin: 14px 0 10px;
+        font-size: clamp(28px, 3vw, 44px);
+        line-height: 1.08;
+        letter-spacing: -0.6px;
+      }
+      .lead{
+        margin: 0 0 18px;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.55;
+        max-width: 62ch;
+      }
+      .hero-actions{
+        display:flex; flex-wrap: wrap; gap: 10px;
+        margin-top: 12px;
+      }
+      .hero-meta{
+        display:grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 18px;
+      }
+      .meta{
+        padding: 12px 12px;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.04);
+      }
+      .meta strong{ display:block; font-size: 13px; }
+      .meta span{ display:block; margin-top: 4px; color: var(--muted); font-size: 13px; }
+
+      .hero-media{
+        position: relative;
+        min-height: 360px;
+        background: #111;
+      }
+      .hero-media img{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display:block;
+        filter: saturate(1.03) contrast(1.03);
+      }
+      .hero-media:after{
+        content:"";
+        position:absolute; inset:0;
+        background: linear-gradient(180deg, rgba(11,15,18,0.12), rgba(11,15,18,0.72));
+      }
+      .badge{
+        position:absolute;
+        left: 16px; bottom: 16px;
+        z-index: 2;
+        padding: 10px 12px;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: rgba(11,15,18,0.55);
+        backdrop-filter: blur(8px);
+        color: var(--text);
+        max-width: 85%;
+      }
+      .badge-title{ font-weight: 750; }
+      .badge-sub{ color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+      /* Sections */
+      section{ padding: 26px 0; }
+      .section-head{
+        display:flex; align-items:flex-end; justify-content:space-between; gap: 14px;
+        margin-bottom: 14px;
+      }
+      h2{
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: -0.2px;
+      }
+      .section-note{
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.45;
+        max-width: 64ch;
+      }
+
+      /* Cards grid */
+      .grid{
+        display:grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 14px;
+      }
+      .card{
+        grid-column: span 4;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: rgba(255,255,255,0.04);
+        overflow:hidden;
+        box-shadow: 0 10px 26px rgba(0,0,0,0.22);
+      }
+      .card img{
+        width:100%;
+        height: 190px;
+        object-fit: cover;
+        display:block;
+      }
+      .card-body{
+        padding: 14px 14px 16px;
+      }
+      .card-title{
+        font-weight: 800;
+        margin: 0 0 6px;
+      }
+      .card-text{
+        margin: 0 0 10px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .chips{ display:flex; flex-wrap:wrap; gap: 8px; }
+      .chip{
+        font-size: 12px;
+        color: rgba(255,255,255,0.86);
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.04);
+        padding: 6px 10px;
+        border-radius: 999px;
+      }
+
+      /* Two column info */
+      .panel{
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+        padding: 16px;
+      }
+      .two{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .list{
+        margin: 0; padding-left: 18px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .list li{ margin: 6px 0; }
+
+      /* Footer */
+      footer{
+        padding: 26px 0 70px;
+        border-top: 1px solid var(--line);
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .foot{
+        display:flex; justify-content:space-between; align-items:flex-start;
+        gap: 14px; flex-wrap: wrap;
+      }
+
+      /* Responsive */
+      @media (max-width: 980px){
+        .hero-grid{ grid-template-columns: 1fr; }
+        .hero-media{ min-height: 280px; }
+        .card{ grid-column: span 6; }
+        .hero-meta{ grid-template-columns: 1fr; }
+        .two{ grid-template-columns: 1fr; }
+      }
+      @media (max-width: 560px){
+        .nav{ display:none; }
+        .card{ grid-column: span 12; }
+        .hero-copy{ padding: 18px; }
+      }
+
+      /* Chatbot positioning + theme */
       df-messenger {
         z-index: 999;
         position: fixed;
@@ -23,10 +327,380 @@
       }
     </style>
   </head>
-  <body>
-    <h1>Finca Concierge (Alpha)</h1>
-    <p>Haz clic en el chat abajo a la derecha para iniciar la prueba.</p>
 
+  <body>
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div style="font-size:14px; line-height:1.1;">Finca El Mirador</div>
+            <div style="font-size:12px; color:var(--muted); font-weight:600;">Armenia, Quindío • Reservas & Experiencias</div>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="Navegación principal">
+          <a href="#espacios">Espacios</a>
+          <a href="#habitaciones">Habitaciones</a>
+          <a href="#tarifas">Temporadas</a>
+          <a href="#politicas">Políticas</a>
+          <a href="#contacto">Contacto</a>
+        </nav>
+
+        <div class="cta">
+          <a class="btn btn-primary" href="#contacto" title="Ir a contacto">Consultar disponibilidad</a>
+          <a class="btn" href="#espacios" title="Ver espacios">Ver espacios</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <main class="container">
+      <section class="hero" id="inicio">
+        <div class="hero-grid">
+          <div class="hero-card hero-copy">
+            <div class="kicker"><span class="dot" aria-hidden="true"></span>Alpha de reservas • Prueba con el chat abajo a la derecha</div>
+            <h1>Descanso con vista. Experiencias con intención.</h1>
+            <p class="lead">
+              Bienvenido a <strong>Finca El Mirador</strong>, una finca ficticia para pruebas de producto.
+              Aquí puedes reservar <strong>habitaciones</strong>, <strong>espacios</strong> (BBQ, fogata, salón, coworking)
+              o la <strong>finca completa</strong> para eventos familiares y estadías tranquilas.
+            </p>
+
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#habitaciones">Explorar habitaciones</a>
+              <a class="btn" href="#espacios">Explorar espacios</a>
+              <button class="btn" onclick="openChat()">Abrir chat de reservas</button>
+            </div>
+
+            <div class="hero-meta" aria-label="Características destacadas">
+              <div class="meta">
+                <strong>Ideal para</strong>
+                <span>familias, teletrabajo, reuniones pequeñas</span>
+              </div>
+              <div class="meta">
+                <strong>Ambiente</strong>
+                <span>campestre, sobrio, cómodo y ordenado</span>
+              </div>
+              <div class="meta">
+                <strong>Reserva guiada</strong>
+                <span>usa el chat para cotizar y elegir espacio</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-card hero-media" aria-label="Imagen principal de la finca">
+            <!-- Imagen placeholder (Unsplash). Puedes reemplazar por fotos reales -->
+            <img
+              src="https://images.unsplash.com/photo-1505691723518-36a5ac3b2a9b?auto=format&fit=crop&w=1400&q=70"
+              alt="Vista exterior campestre de una finca con zonas verdes"
+              loading="lazy"
+            />
+            <div class="badge">
+              <div class="badge-title">Reservas rápidas (Alpha)</div>
+              <div class="badge-sub">Pregunta por habitaciones, espacios y políticas. Si falta disponibilidad real, quedará como “pendiente de confirmación”.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Espacios reservables -->
+      <section id="espacios">
+        <div class="section-head">
+          <div>
+            <h2>Espacios disponibles</h2>
+            <div class="section-note">Selecciona el tipo de espacio que deseas reservar: perfecto para celebraciones sobrias, encuentros familiares o trabajo remoto.</div>
+          </div>
+          <div class="section-note">Tip: abre el chat y di “Quiero reservar el BBQ” o “Necesito coworking”.</div>
+        </div>
+
+        <div class="grid">
+          <article class="card">
+            <img
+              src="https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=1200&q=70"
+              alt="Salón interior para reuniones con mesas y sillas"
+              loading="lazy"
+            />
+            <div class="card-body">
+              <h3 class="card-title">Salón de eventos</h3>
+              <p class="card-text">Para reuniones familiares, celebraciones y charlas. Ambiente cómodo, ventilado y organizado.</p>
+              <div class="chips">
+                <span class="chip">Capacidad flexible</span>
+                <span class="chip">Uso por franjas</span>
+                <span class="chip">Ideal para familia</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <img
+              src="https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?auto=format&fit=crop&w=1200&q=70"
+              alt="Zona de parrilla al aire libre para BBQ"
+              loading="lazy"
+            />
+            <div class="card-body">
+              <h3 class="card-title">Zona BBQ</h3>
+              <p class="card-text">Parrilla y mesa de apoyo para asados. Ideal para almuerzos de sábado con la familia (sin improvisaciones).</p>
+              <div class="chips">
+                <span class="chip">Parrilla</span>
+                <span class="chip">Zona social</span>
+                <span class="chip">Reservable</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <img
+              src="https://images.unsplash.com/photo-1506784365847-bbad939e9335?auto=format&fit=crop&w=1200&q=70"
+              alt="Fogata al aire libre con sillas alrededor"
+              loading="lazy"
+            />
+            <div class="card-body">
+              <h3 class="card-title">Fogata</h3>
+              <p class="card-text">Un espacio cálido para conversar. Horarios definidos para respetar el descanso y el entorno.</p>
+              <div class="chips">
+                <span class="chip">Horarios</span>
+                <span class="chip">Ambiente tranquilo</span>
+                <span class="chip">Reglas de ruido</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <img
+              src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=70"
+              alt="Espacio de coworking con mesas y portátiles"
+              loading="lazy"
+            />
+            <div class="card-body">
+              <h3 class="card-title">Coworking</h3>
+              <p class="card-text">Para teletrabajo con buena iluminación y mesas cómodas. Ideal para estadías entre semana.</p>
+              <div class="chips">
+                <span class="chip">Silencioso</span>
+                <span class="chip">Mesas</span>
+                <span class="chip">Reserva por franja</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <img
+              src="https://images.unsplash.com/photo-1469796466635-455ede028aca?auto=format&fit=crop&w=1200&q=70"
+              alt="Zona exterior amplia con jardín"
+              loading="lazy"
+            />
+            <div class="card-body">
+              <h3 class="card-title">Zonas verdes</h3>
+              <p class="card-text">Caminatas suaves, lectura y descanso. Un clásico que nunca falla: naturaleza y calma.</p>
+              <div class="chips">
+                <span class="chip">Aire libre</span>
+                <span class="chip">Descanso</span>
+                <span class="chip">Familiar</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <img
+              src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=70"
+              alt="Terraza con vista y espacio para sentarse"
+              loading="lazy"
+            />
+            <div class="card-body">
+              <h3 class="card-title">Terraza mirador</h3>
+              <p class="card-text">Un lugar para café y conversación con vista. Perfecto para tardear con sombra y tranquilidad.</p>
+              <div class="chips">
+                <span class="chip">Vista</span>
+                <span class="chip">Café</span>
+                <span class="chip">Atardecer</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Habitaciones -->
+      <section id="habitaciones">
+        <div class="section-head">
+          <div>
+            <h2>Habitaciones</h2>
+            <div class="section-note">
+              Habitaciones pensadas para descanso real: camas cómodas, amenities esenciales y reglas claras.
+              (Contenido ficticio para pruebas.)
+            </div>
+          </div>
+          <div class="section-note">Tip: en el chat di “Hab para 2 adultos” o “Suite con balcón”.</div>
+        </div>
+
+        <div class="grid">
+          <article class="card">
+            <img
+              src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200&q=70"
+              alt="Habitación con cama doble y luz cálida"
+              loading="lazy"
+            />
+            <div class="card-body">
+              <h3 class="card-title">Suite Mirador</h3>
+              <p class="card-text">Cama queen, vista al jardín y espacio para trabajar. Para quien quiere comodidad sin exceso.</p>
+              <div class="chips">
+                <span class="chip">2–3 personas</span>
+                <span class="chip">Cama Queen</span>
+                <span class="chip">Escritorio</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <img
+              src="https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=1200&q=70"
+              alt="Habitación familiar con dos camas"
+              loading="lazy"
+            />
+            <div class="card-body">
+              <h3 class="card-title">Habitación Familiar</h3>
+              <p class="card-text">Para familia: cama doble + camarote o cama auxiliar. Orden y descanso, sin improvisaciones.</p>
+              <div class="chips">
+                <span class="chip">4–5 personas</span>
+                <span class="chip">Familiar</span>
+                <span class="chip">Espaciosa</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <img
+              src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=70"
+              alt="Habitación sencilla con cama cómoda"
+              loading="lazy"
+            />
+            <div class="card-body">
+              <h3 class="card-title">Habitación Sendero</h3>
+              <p class="card-text">Opción sencilla y acogedora. Perfecta para escapadas de fin de semana con presupuesto cuidado.</p>
+              <div class="chips">
+                <span class="chip">2 personas</span>
+                <span class="chip">Económica</span>
+                <span class="chip">Confort</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Temporadas / Tarifas -->
+      <section id="tarifas">
+        <div class="section-head">
+          <div>
+            <h2>Tarifas base y temporadas</h2>
+            <div class="section-note">
+              Tarifas orientativas (ficticias) para pruebas. La cotización final depende de fechas, ocupación y espacio.
+            </div>
+          </div>
+        </div>
+
+        <div class="two">
+          <div class="panel">
+            <h3 style="margin:0 0 8px; letter-spacing:-0.2px;">Temporada baja</h3>
+            <ul class="list">
+              <li>Entre semana: ideal para coworking y descanso.</li>
+              <li>Fines de semana: mínimo 2 noches (según disponibilidad).</li>
+              <li>Recomendación: reservar con anticipación.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3 style="margin:0 0 8px; letter-spacing:-0.2px;">Temporada alta</h3>
+            <ul class="list">
+              <li>Puentes, festivos y fechas especiales.</li>
+              <li>Mayor demanda: se prioriza reserva confirmada.</li>
+              <li>Algunas áreas pueden tener franjas obligatorias.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Políticas -->
+      <section id="politicas">
+        <div class="section-head">
+          <div>
+            <h2>Políticas principales</h2>
+            <div class="section-note">
+              Reglas claras = experiencia tranquila. El chat puede ampliar cada punto (check-in/out, cancelación, mascotas, ruido).
+            </div>
+          </div>
+        </div>
+
+        <div class="two">
+          <div class="panel">
+            <h3 style="margin:0 0 8px;">Check-in / Check-out</h3>
+            <ul class="list">
+              <li>Check-in desde la tarde (según disponibilidad).</li>
+              <li>Check-out en la mañana para permitir alistamiento.</li>
+              <li>Late check-out sujeto a confirmación.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3 style="margin:0 0 8px;">Ruido, mascotas y cancelación</h3>
+            <ul class="list">
+              <li>Horarios de silencio para proteger el descanso.</li>
+              <li>Mascotas: depende de la habitación/área (consulta en el chat).</li>
+              <li>Cancelación: condiciones por temporada (consulta exacta en el chat).</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contacto -->
+      <section id="contacto">
+        <div class="section-head">
+          <div>
+            <h2>Contacto</h2>
+            <div class="section-note">
+              Para pruebas alpha: usa el chat (abajo a la derecha). Si prefieres, deja tu intención de reserva y te guiamos.
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="two">
+            <div>
+              <h3 style="margin:0 0 8px;">Cómo reservar</h3>
+              <ul class="list">
+                <li>Abre el chat y di: “Quiero reservar una habitación”.</li>
+                <li>Indica fechas, número de adultos/niños y preferencia (habitación/espacio/finca completa).</li>
+                <li>Recibirás una cotización y una solicitud “pendiente de confirmación” si no hay disponibilidad real.</li>
+              </ul>
+              <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="openChat()">Abrir chat ahora</button>
+                <a class="btn" href="#inicio">Volver arriba</a>
+              </div>
+            </div>
+
+            <div>
+              <h3 style="margin:0 0 8px;">Consejo para testers</h3>
+              <ul class="list">
+                <li>Prueba “este fin de semana”, “2 noches”, “finca completa”, “solo BBQ”.</li>
+                <li>Haz 1 pregunta de políticas (mascotas/ruido/cancelación).</li>
+                <li>Si el bot se desvía a “buscar otras fincas”, indícalo: debe enfocarse en El Mirador.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <div class="foot">
+          <div>
+            <strong style="color:var(--text);">Finca El Mirador</strong><br/>
+            <span>Landing ficticia para pruebas alpha de reservas y concierge.</span>
+          </div>
+          <div>
+            <span>© <span id="year"></span> • Hecho para pruebas internas</span>
+          </div>
+        </div>
+      </footer>
+    </main>
+
+    <!-- Chatbot embed -->
     <df-messenger
       location="us-central1"
       project-id="cordial-480800"
@@ -35,9 +709,12 @@
       max-query-length="-1">
       <df-messenger-chat-bubble chat-title="Finca Concierge"></df-messenger-chat-bubble>
     </df-messenger>
-  </body>
 
-  <script>
+    <script>
+      // Año
+      document.getElementById("year").textContent = new Date().getFullYear();
+
+      // Set timezone for relative date resolution
       window.addEventListener("load", () => {
         const dfMessenger = document.querySelector("df-messenger");
         if (!dfMessenger?.setQueryParameters) return;
@@ -47,5 +724,30 @@
           // opcional: parameters: { canal: "alpha_web" }
         });
       });
+
+      // Best-effort: open chat bubble
+      function openChat(){
+        try{
+          const messenger = document.querySelector("df-messenger");
+          const shadow = messenger && messenger.shadowRoot;
+          if(!shadow){
+            // Fallback: just scroll hint
+            alert("El chat está abajo a la derecha. Haz clic en el ícono para iniciar.");
+            return;
+          }
+          // Try common button selectors inside df-messenger shadow DOM
+          const btn =
+            shadow.querySelector("df-messenger-chat-bubble")?.shadowRoot?.querySelector("button") ||
+            shadow.querySelector("button") ||
+            shadow.querySelector("[aria-label*='Open']") ||
+            shadow.querySelector("[aria-label*='Abrir']");
+          if(btn) btn.click();
+          else alert("El chat está abajo a la derecha. Haz clic en el ícono para iniciar.");
+        }catch(e){
+          alert("El chat está abajo a la derecha. Haz clic en el ícono para iniciar.");
+        }
+      }
     </script>
+  </body>
 </html>
+```
